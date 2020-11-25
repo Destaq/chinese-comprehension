@@ -79,15 +79,18 @@ def comprehension_checker(
         re.sub("[a-zA-Z0-9]", "\n", target_text_content).split("\n")
     )  # remove english characters and numbers
     punctuations = (
-        "！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔"
+        "！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─"
     )
     target_text_content = "".join(
         re.sub(r"[%s]+" % punctuations, "", target_text_content).split("\n")
     )  # remove punctuations
 
+    character_word_text = ""
     if mode == "smart":
+        character_word_text = "Words"
         target_text_content = list(jieba.cut(target_text_content))  # split using jieba
     elif mode == "simple":
+        character_word_text = "Characters"
         target_text_content = split_unicode_chrs(target_text_content)
         known_words = set(
             "".join([e for e in known_words])
@@ -98,6 +101,7 @@ def comprehension_checker(
     counted_target = Counter(target_text_content)
     target_length = len(target_text_content)
 
+    total_unique_words = len(counted_target)
     counter = 0
     crosstext_count = 0
     unknown_words = []
@@ -105,33 +109,40 @@ def comprehension_checker(
 
     for hanzi, count in counted_target.items():
         counter += 1
-        print(f"-- {counter/len(counted_target) * 100:.2f}% complete --", end="\r")
+        print(f"-- {counter/total_unique_words * 100:.2f}% complete --", end="\r")
         if hanzi in known_words:
             crosstext_count += count
         elif outputfile is not None:
             unknown_word_counter += 1
-            unknown_words.append(hanzi)
+            unknown_words.append((hanzi, count))
 
+    unknown_words.sort(key=sort_by_count, reverse=True)
     if outputfile is not None:
         try:
             with open(outputfile, "w+") as file:
-                for ele in unknown_words:
-                    file.write(ele + "\n")
+                for ele, count in unknown_words:
+                    file.write(ele + " : " + str(count) + "\n")
         except KeyError as ke:
             return ke
             
         return (
-            "\n\033[92mComprehension: \033[0m"
+            "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"
+            + f"{total_unique_words}"
+            +"\n\033[92mComprehension: \033[0m"
             + f"{crosstext_count/target_length * 100:.3f}%"
-            + "\n\033[92mUnique Unknown Words: \033[0m"
+            + "\n\033[92mUnique Unknown " + f"{character_word_text}" + ": \033[0m"
             + f"{unknown_word_counter}"
         )
     else:
         return (
+            "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"
+            + f"{total_unique_words}"
             "\n\033[92mComprehension: \033[0m"
             + f"{crosstext_count/target_length * 100:.3f}%"
         )
 
+def sort_by_count(e):
+  return e[1]
 
 if __name__ == "__main__":
     print(comprehension_checker(args.known, args.target, args.mode, args.unknown))

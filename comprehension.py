@@ -79,7 +79,7 @@ def comprehension_checker(
         re.sub("[a-zA-Z0-9]", "\n", target_text_content).split("\n")
     )  # remove english characters and numbers
     punctuations = (
-        "！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-"
+        "！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─"
     )
     target_text_content = "".join(
         re.sub(r"[%s]+" % punctuations, "", target_text_content).split("\n")
@@ -114,13 +114,14 @@ def comprehension_checker(
             crosstext_count += count
         elif outputfile is not None:
             unknown_word_counter += 1
-            unknown_words.append(hanzi)
+            unknown_words.append((hanzi, count))
 
+    unknown_words.sort(key=sort_by_count, reverse=True)
     if outputfile is not None:
         try:
             with open(outputfile, "w+") as file:
-                for ele in unknown_words:
-                    file.write(ele + "\n")
+                for ele, count in unknown_words:
+                    file.write(ele + " : " + str(count) + "\n")
         except KeyError as ke:
             return ke
             
@@ -140,6 +141,8 @@ def comprehension_checker(
             + f"{crosstext_count/target_length * 100:.3f}%"
         )
 
+def sort_by_count(e):
+  return e[1]
 
 if __name__ == "__main__":
     print(comprehension_checker(args.known, args.target, args.mode, args.unknown))

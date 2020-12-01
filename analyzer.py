@@ -4,7 +4,7 @@ from re import compile as _Re
 import core.shared as shared
 
 parser = argparse.ArgumentParser(
-    description="Calculates percentage comprehension of a text file based on known words."
+    description="Calculate unique words and character count of a text file - result is rounded to nearest 50"
 )
 parser.add_argument(
     "-t",
@@ -75,13 +75,10 @@ def text_analyzer(
             
     return (
         "\n\033[92mTotal Unique Words: \033[0m"
-        + f"{total_unique_words}"
+        + f"{shared.round_to_nearest_50(total_unique_words)}"
         "\n\033[92mTotal Unique Characters: \033[0m"
-        + f"{total_unique_characters}"
+        + f"{shared.round_to_nearest_50(total_unique_characters)}"
     )
-
-def sort_by_count(e):
-  return e[1]
 
 if __name__ == "__main__":
     print(text_analyzer(args.target, args.output))

@@ -15,3 +15,6 @@ def text_clean_up(target_text):
     )  # remove punctuations
 
     return target_text_content
+
+def round_to_nearest_50(x, base=50):
+    return base * round(x/base)

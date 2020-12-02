@@ -1,6 +1,7 @@
 import re, jieba, argparse
 from collections import Counter
 from re import compile as _Re
+import core.shared as shared
 
 parser = argparse.ArgumentParser(
     description="Calculates percentage comprehension of a text file based on known words."
@@ -72,18 +73,7 @@ def comprehension_checker(
     except KeyError as ke:
         raise ke
 
-    target_text_content = "".join(
-        re.sub("\s+", "\n", target_text.read()).split("\n")
-    )  # remove whitespace
-    target_text_content = "".join(
-        re.sub("[a-zA-Z0-9]", "\n", target_text_content).split("\n")
-    )  # remove english characters and numbers
-    punctuations = (
-        "！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─"
-    )
-    target_text_content = "".join(
-        re.sub(r"[%s]+" % punctuations, "", target_text_content).split("\n")
-    )  # remove punctuations
+    target_text_content = shared.text_clean_up(target_text)
 
     character_word_text = ""
     if mode == "smart":

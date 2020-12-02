@@ -67,3 +67,54 @@ The `--target` paramaeter takes the filename containing the target text. This sh
 卻 : 1264
 ...
 ```
+
+# Analyzer
+
+## Usage
+```
+usage: analyzer.py [-h] -t TARGET [-o OUTPUT]
+
+Calculate unique words and character count of a text file - result is rounded to nearest 50
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t TARGET, --target TARGET
+                        Relative path to .txt target file in Chinese.
+  -o OUTPUT, --output OUTPUT
+                        Path to output file with all words & characters words from text. Skip to
+                        not create an output file.
+```
+
+### Example
+
+*Code*: `python3 analyzer.py -t "journey_to_the_west.txt" -o "output.txt"`
+*Description*: Analyzes `journey_to_the_west.txt` using the word-by-word and character-by-character splitting. Outputs all characters and words to `output.txt`.
+
+*Output*
+```
+Total Unique Words: 32226
+Total Unique Characters: 3572
+```
+
+*Content of `output.txt`*
+```
+=== All Unique Words ===
+的 : 18840
+了 : 15791
+昇 : 10683
+周 : 9155
+余皓 : 8995
+我 : 7512
+...
+
+=== All Unique Characters ===
+的 : 19664
+了 : 17135
+余 : 14223
+皓 : 14103
+一 : 12667
+周 : 11641
+昇 : 10756
+不 : 10217
+我 : 8723
+```

@@ -30,6 +30,12 @@ parser.add_argument(
     required=False,
     help="Path to output file with unknown words from text. Skip to not create an output file.",
 )
+parser.add_argument(
+    "-e",
+    "--exclude",
+    required=False,
+    help="Path to .txt file with newline-separated words to exclude (e.g. proper nouns)",
+)
 
 args = parser.parse_args()
 
@@ -53,19 +59,13 @@ def split_unicode_chrs(text):
 
 
 def comprehension_checker(
-    knownfile: str, targetfile: str, mode: str, outputfile: str
+    knownfile: str, targetfile: str, mode: str, outputfile: str, excludefile: str,
 ) -> str:
-    try:
-        wordlist = open(knownfile, "r")  # filename of your known words here
-    except KeyError as ke:
-        raise ke
+    known_words = shared.load_word_list_from_file(knownfile)
 
-    known_words = set(
-        re.sub("\s+", "\n", wordlist.read()).split("\n")
-    )  # splitting to remove accidental whitespace
-    if "" in known_words:
-        known_words.remove("")
-    wordlist.close()
+    exclude_words = []
+    if excludefile != None:
+        exclude_words = shared.load_word_list_from_file(excludefile)
 
     # access text in .txt format
     try:
@@ -88,6 +88,7 @@ def comprehension_checker(
     else:
         raise KeyError("mode provided invalid")
 
+    target_text_content = shared.remove_exclusions(target_text_content, exclude_words)
     counted_target = Counter(target_text_content)
     target_length = len(target_text_content)
 
@@ -102,9 +103,10 @@ def comprehension_checker(
         print(f"-- {counter/total_unique_words * 100:.2f}% complete --", end="\r")
         if hanzi in known_words:
             crosstext_count += count
-        elif outputfile is not None:
+        else:
             unknown_word_counter += 1
-            unknown_words.append((hanzi, count))
+            if outputfile is not None:
+                unknown_words.append((hanzi, count))
 
     unknown_words.sort(key=sort_by_count, reverse=True)
     if outputfile is not None:
@@ -115,24 +117,17 @@ def comprehension_checker(
         except KeyError as ke:
             return ke
             
-        return (
-            "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"
-            + f"{total_unique_words}"
-            +"\n\033[92mComprehension: \033[0m"
-            + f"{crosstext_count/target_length * 100:.3f}%"
-            + "\n\033[92mUnique Unknown " + f"{character_word_text}" + ": \033[0m"
-            + f"{unknown_word_counter}"
-        )
-    else:
-        return (
-            "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"
-            + f"{total_unique_words}"
-            "\n\033[92mComprehension: \033[0m"
-            + f"{crosstext_count/target_length * 100:.3f}%"
-        )
+    return (
+        "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"
+        + f"{total_unique_words}"
+        +"\n\033[92mComprehension: \033[0m"
+        + f"{crosstext_count/target_length * 100:.3f}%"
+        + "\n\033[92mUnique Unknown " + f"{character_word_text}" + ": \033[0m"
+        + f"{unknown_word_counter}"
+    )
 
 def sort_by_count(e):
   return e[1]
 
 if __name__ == "__main__":
-    print(comprehension_checker(args.known, args.target, args.mode, args.unknown))
+    print(comprehension_checker(args.known, args.target, args.mode, args.unknown, args.exclude))

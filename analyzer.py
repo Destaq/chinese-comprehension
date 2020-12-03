@@ -18,6 +18,12 @@ parser.add_argument(
     required=False,
     help="Path to output file with all words & characters words from text. Skip to not create an output file.",
 )
+parser.add_argument(
+    "-e",
+    "--exclude",
+    required=False,
+    help="Path to .txt file with newline-separated words to exclude (e.g. proper nouns)",
+)
 
 args = parser.parse_args()
 
@@ -41,8 +47,12 @@ def split_unicode_chrs(text):
 
 
 def text_analyzer(
-    targetfile: str, outputfile: str
+    targetfile: str, outputfile: str, excludefile: str,
 ) -> str:
+    exclude_words = []
+    if excludefile != None:
+        exclude_words = shared.load_word_list_from_file(excludefile)
+
     # access text in .txt format
     try:
         target_text = open(targetfile, "r")  # filename of your target text here
@@ -50,13 +60,12 @@ def text_analyzer(
         raise ke
 
     target_text_content = shared.text_clean_up(target_text)
-
     target_word_content = list(jieba.cut(target_text_content))  # split using jieba
-    counted_target_word = Counter(target_word_content)
+    counted_target_word = Counter(shared.remove_exclusions(target_word_content, exclude_words))
     total_unique_words = len(counted_target_word)
 
     target_character_content = split_unicode_chrs(target_text_content)
-    counted_target_character = Counter(target_character_content)
+    counted_target_character = Counter(shared.remove_exclusions(target_character_content, exclude_words))
     total_unique_characters = len(counted_target_character)
 
     if outputfile is not None:
@@ -81,4 +90,4 @@ def text_analyzer(
     )
 
 if __name__ == "__main__":
-    print(text_analyzer(args.target, args.output))
+    print(text_analyzer(args.target, args.output, args.exclude))

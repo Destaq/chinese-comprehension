@@ -7,23 +7,32 @@ Analyze a Chinese text using your known words to gauge comprehension.
   - Count unique unknown words in text
 - Calculate comprehension of text based on your known words
   - Calculate the above splitting text and known vocab word-by-word or character-by-character
+- Exclude words such as proper nouns to improve comprehension accuracy 
 - Output unknown words into a file
 
 ## Usage
 ```
 usage: comprehension.py [-h] -k KNOWN -t TARGET [-m MODE] [-u UNKNOWN]
+                        [-e EXCLUDE]
 
 Calculates percentage comprehension of a text file based on known words.
 
 optional arguments:
   -h, --help            show this help message and exit
   -k KNOWN, --known KNOWN
-                        Relative path to .txt file with newline-separated known words.
+                        Relative path to .txt file with newline-separated
+                        known words.
   -t TARGET, --target TARGET
                         Relative path to .txt target file in Chinese.
-  -m MODE, --mode MODE  Mode for separating text and known vocab: 'smart' (default, word-by-word using jieba) 'simple' (character-by-character)
+  -m MODE, --mode MODE  Mode for separating text and known vocab: 'smart'
+                        (default, word-by-word using jieba) 'simple'
+                        (character-by-character)
   -u UNKNOWN, --unknown UNKNOWN
-                        Path to output file with unknown words from text. Skip to not create an output file.
+                        Path to output file with unknown words from text. Skip
+                        to not create an output file.
+  -e EXCLUDE, --exclude EXCLUDE
+                        Path to .txt file with newline-separated words to
+                        exclude (e.g. proper nouns)
 ```
 
 The `--known` parameter takes the filename containing known words. These words represent all words the user knows for best accuracy. Methods for fetching these words:
@@ -51,6 +60,17 @@ The `--target` paramaeter takes the filename containing the target text. This sh
 ...
 ```
 
+The `--exclude` parameter takes the filename containing words to exclude words. Exclude any proper nouns such as character names & company names to improve accuracy
+
+The file should have words separated line-by-line:
+```
+安琪
+赵宁一
+爱丽丝
+麦当劳
+...
+```
+
 ### Example
 
 *Code*: `python3 comprehension.py --known "known.txt" -t "journey_to_the_west.txt" -u "output.txt"`
@@ -72,17 +92,21 @@ The `--target` paramaeter takes the filename containing the target text. This sh
 
 ## Usage
 ```
-usage: analyzer.py [-h] -t TARGET [-o OUTPUT]
+usage: analyzer.py [-h] -t TARGET [-o OUTPUT] [-e EXCLUDE]
 
-Calculate unique words and character count of a text file - result is rounded to nearest 50
+Calculate unique words and character count of a text file - result is rounded
+to nearest 50
 
 optional arguments:
   -h, --help            show this help message and exit
   -t TARGET, --target TARGET
                         Relative path to .txt target file in Chinese.
   -o OUTPUT, --output OUTPUT
-                        Path to output file with all words & characters words from text. Skip to
-                        not create an output file.
+                        Path to output file with all words & characters words
+                        from text. Skip to not create an output file.
+  -e EXCLUDE, --exclude EXCLUDE
+                        Path to .txt file with newline-separated words to
+                        exclude (e.g. proper nouns)
 ```
 
 ### Example

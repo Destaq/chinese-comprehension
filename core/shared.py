@@ -19,24 +19,23 @@ def text_clean_up(target_text):
     target_text_content = "".join(
         re.sub("\s+", "\n", target_text.read()).split("\n")
     )  # remove whitespace
-    target_text_content = "".join(
-        re.sub("[a-zA-Z0-9]", "\n", target_text_content).split("\n")
-    )  # remove english characters and numbers
+    return target_text_content
+
+def remove_punctuations(word_list: list):
+    punctuations = ["！", "？", "。", "，"]
+    for punctuation in punctuations:
+        if punctuation in word_list:
+            word_list = [v for v in word_list if v != punctuation]
+
+    return word_list
+
+def remove_exclusions(word_list: list, additional_exclusions: list):
     punctuations = (
         "！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─"
     )
-    target_text_content = "".join(
-        re.sub(r"[%s]+" % punctuations, "", target_text_content).split("\n")
-    )  # remove punctuations
-
-    return target_text_content
-
-def remove_words(word_list: list, exclude_words: list):
-    if len(exclude_words):
-        for exclude in exclude_words:
-            if exclude in word_list:
-                print(exclude)
-                del word_list[exclude]
+    exclusions = [char for char in punctuations]
+    exclusions.extend(additional_exclusions)
+    word_list = list(filter(lambda x: x not in exclusions and not re.match(r'[a-zA-Z0-9]+', x), word_list))
 
     return word_list
 

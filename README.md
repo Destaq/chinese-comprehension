@@ -92,17 +92,21 @@ The file should have words separated line-by-line:
 
 ## Usage
 ```
-usage: analyzer.py [-h] -t TARGET [-o OUTPUT]
+usage: analyzer.py [-h] -t TARGET [-o OUTPUT] [-e EXCLUDE]
 
-Calculate unique words and character count of a text file - result is rounded to nearest 50
+Calculate unique words and character count of a text file - result is rounded
+to nearest 50
 
 optional arguments:
   -h, --help            show this help message and exit
   -t TARGET, --target TARGET
                         Relative path to .txt target file in Chinese.
   -o OUTPUT, --output OUTPUT
-                        Path to output file with all words & characters words from text. Skip to
-                        not create an output file.
+                        Path to output file with all words & characters words
+                        from text. Skip to not create an output file.
+  -e EXCLUDE, --exclude EXCLUDE
+                        Path to .txt file with newline-separated words to
+                        exclude (e.g. proper nouns)
 ```
 
 ### Example

@@ -88,7 +88,8 @@ def comprehension_checker(
     else:
         raise KeyError("mode provided invalid")
 
-    counted_target = Counter(shared.remove_exclusions(target_text_content, exclude_words))
+    target_text_content = shared.remove_exclusions(target_text_content, exclude_words)
+    counted_target = Counter(target_text_content)
     target_length = len(target_text_content)
 
     total_unique_words = len(counted_target)

@@ -41,7 +41,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 print("Initializing parser...", end="\r")
-lac = LAC(mode='seg')
+lac = LAC(mode='LAC')
 print("Initializing parser... \033[94mdone\033[0m\n")
 
 
@@ -73,6 +73,10 @@ def comprehension_checker(
         raise ke
 
     target_text_content = shared.text_clean_up(target_text)
+    
+    known_characters = set(
+        "".join([e for e in known_words])
+    )  # convert known_words to chr_by_chr too
 
     character_word_text = ""
     if mode == "smart":
@@ -81,40 +85,45 @@ def comprehension_checker(
     elif mode == "simple":
         character_word_text = "Characters"
         target_text_content = split_unicode_chrs(target_text_content)
-        known_words = set(
-            "".join([e for e in known_words])
-        )  # convert known_words to chr_by_chr too
     else:
         raise KeyError("mode provided invalid")
 
-    target_text_content = shared.remove_exclusions(target_text_content, exclude_words)
-    counted_target = Counter(target_text_content)
-    target_length = len(target_text_content)
+    # target_text_content = shared.remove_exclusions(target_text_content, exclude_words)
+    target_word_and_type = zip(target_text_content[0], target_text_content[1])
+    counted_target = Counter(target_word_and_type)
 
-    total_unique_words = len(counted_target)
-    counter = 0
+    target_length = 0
+    total_unique_words = 0
     crosstext_count = 0
     unknown_words = []
     unknown_word_counter = 0
+    for word_and_type, count in counted_target.items():
+        word = word_and_type[0]
+        word_type = word_and_type[1]
 
-    for hanzi, count in counted_target.items():
-        counter += 1
-        print(f"-- {counter/total_unique_words * 100:.2f}% complete --", end="\r")
-        if hanzi in known_words:
+        if word_type == "w":
+            continue
+
+        target_length += count
+        total_unique_words += 1
+        if word_type == "m" and shared.know_all_characters(word, known_characters) == True:
+                crosstext_count += count
+        elif word in known_words:
             crosstext_count += count
         else:
             unknown_word_counter += 1
             if outputfile is not None:
-                unknown_words.append((hanzi, count))
+                unknown_words.append((word, count))
 
-    unknown_words.sort(key=sort_by_count, reverse=True)
-    if outputfile is not None:
-        try:
-            with open(outputfile, "w+") as file:
-                for ele, count in unknown_words:
-                    file.write(ele + " : " + str(count) + "\n")
-        except KeyError as ke:
-            return ke
+
+    # unknown_words.sort(key=sort_by_count, reverse=True)
+    # if outputfile is not None:
+    #     try:
+    #         with open(outputfile, "w+") as file:
+    #             for ele, count in unknown_words:
+    #                 file.write(ele + " : " + str(count) + "\n")
+    #     except KeyError as ke:
+    #         return ke
             
     return (
         "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"

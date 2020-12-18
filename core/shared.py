@@ -41,3 +41,12 @@ def remove_exclusions(word_list: list, additional_exclusions: list):
 
 def round_to_nearest_50(x, base=50):
     return base * round(x/base)
+
+def know_all_characters(word, known_characters):
+    by_character = set(
+        "".join([e for e in word])
+    )  # spilt word by character
+    for character in by_character:
+        if character not in known_characters:
+            return False
+    return True

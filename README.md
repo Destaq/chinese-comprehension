@@ -1,6 +1,10 @@
 # chinese-comprehension
 Analyze a Chinese text using your known words to gauge comprehension.
 
+# Requirements
+* Python 3.8 
+* LAC - Chinese character segmentation library (https://github.com/baidu/lac/)
+
 ![](result.png)
 ## Features
 - Count unique words in text

@@ -1,4 +1,5 @@
-import re, jieba, argparse
+import re, argparse
+from LAC import LAC
 from collections import Counter
 from re import compile as _Re
 import core.shared as shared
@@ -39,11 +40,9 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-# disable jieba messages
-jieba.setLogLevel(20)
-print("Initializing dictionary...", end="\r")
-jieba.initialize()
-print("Initializing dictionary... \033[94mdone\033[0m\n")
+print("Initializing parser...", end="\r")
+lac = LAC(mode='seg')
+print("Initializing parser... \033[94mdone\033[0m\n")
 
 
 _unicode_chr_splitter = _Re("(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)").split
@@ -78,7 +77,7 @@ def comprehension_checker(
     character_word_text = ""
     if mode == "smart":
         character_word_text = "Words"
-        target_text_content = list(jieba.cut(target_text_content))  # split using jieba
+        target_text_content = list(lac.run(target_text_content))
     elif mode == "simple":
         character_word_text = "Characters"
         target_text_content = split_unicode_chrs(target_text_content)

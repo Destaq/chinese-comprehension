@@ -1,4 +1,5 @@
 import re
+from LAC import LAC
 
 def load_word_list_from_file(file: str):
     try:
@@ -15,34 +16,20 @@ def load_word_list_from_file(file: str):
 
     return words
 
-def text_clean_up(target_text):
-    target_text_content = "".join(
-        re.sub("\s+", "\n", target_text.read()).split("\n")
-    )  # remove whitespace
-    return target_text_content
-
-def remove_punctuations(word_list: list):
-    punctuations = ["！", "？", "。", "，"]
-    for punctuation in punctuations:
-        if punctuation in word_list:
-            word_list = [v for v in word_list if v != punctuation]
-
-    return word_list
-
-def remove_exclusions(word_list: list, additional_exclusions: list):
+def is_excluded(word, additional_exclusions: list):
     punctuations = (
         "！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─"
     )
     exclusions = [char for char in punctuations]
     exclusions.extend(additional_exclusions)
-    word_list = list(filter(lambda x: x not in exclusions and not re.match(r'[a-zA-Z0-9]+', x), word_list))
-
-    return word_list
+    if word not in exclusions and not re.match(r'[a-zA-Z0-9]+', word):
+        return False
+    return True
 
 def round_to_nearest_50(x, base=50):
     return base * round(x/base)
 
-def know_all_characters(word, known_characters):
+def know_all_characters(word: str, known_characters: list):
     by_character = set(
         "".join([e for e in word])
     )  # spilt word by character
@@ -50,3 +37,20 @@ def know_all_characters(word, known_characters):
         if character not in known_characters:
             return False
     return True
+
+def text_segmentation(target_text: str):
+    print("Initializing parser...", end="\r")
+    lac = LAC(mode='LAC')
+    print("Initializing parser... \033[94mdone\033[0m\n")
+
+    print("Segmenting target text...", end="\r")
+    splits = list(re.sub("\s+", "\n", target_text).split("\n"))
+    result = lac.run(splits)
+
+    target_word_and_type = []
+    for line in result:
+        combined = list(zip(line[0], line[1]))
+        target_word_and_type = target_word_and_type + combined
+    print("Segmenting target text... \033[94mdone\033[0m\n")
+
+    return target_word_and_type

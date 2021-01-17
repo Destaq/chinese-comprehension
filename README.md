@@ -3,7 +3,7 @@ Analyze a Chinese text using your known words to gauge comprehension.
 
 # Requirements
 * Python 3.8 
-* LAC - Chinese character segmentation library (https://github.com/baidu/lac/)
+* [LAC](https://github.com/baidu/lac/) - Chinese character segmentation library
 
 ![](result.png)
 ## Features

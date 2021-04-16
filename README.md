@@ -27,7 +27,7 @@ optional arguments:
                         Relative path to .txt file with newline-separated
                         known words.
   -t TARGET, --target TARGET
-                        Relative path to .txt target file in Chinese.
+                        Relative path to .txt or .pdf target file in Chinese.
   -m MODE, --mode MODE  Mode for separating text and known vocab: 'smart'
                         (default, word-by-word using jieba) 'simple'
                         (character-by-character)
@@ -77,8 +77,8 @@ The file should have words separated line-by-line:
 
 ### Example
 
-*Code*: `python3 comprehension.py --known "known.txt" -t "samples/books/journey_to_the_west.txt" -u "output.txt"`
-*Description*: Gathers known words from `known.txt`, and analyzes `samples/books/samples/books/journey_to_the_west.txt` using the default word-by-word splitting. Unknown words are outputted to `output.txt`.
+*Code*: `python3 comprehension.py --known "known.txt" -t "samples/books/Great_Expectations.pdf" -u "output.txt"`
+*Description*: Gathers known words from `known.txt`, and analyzes `samples/books/Great_Expectations.pdf` using the default word-by-word splitting. Unknown words are outputted to `output.txt`.
 
 *Content of `output.txt`*
 ```
@@ -104,7 +104,7 @@ to nearest 50
 optional arguments:
   -h, --help            show this help message and exit
   -t TARGET, --target TARGET
-                        Relative path to .txt target file in Chinese.
+                        Relative path to .txt or .pdf target file in Chinese.
   -o OUTPUT, --output OUTPUT
                         Path to output file with all words & characters words
                         from text. Skip to not create an output file.

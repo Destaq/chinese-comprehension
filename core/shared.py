@@ -1,4 +1,5 @@
-import re
+import re, os
+import pdfminer.high_level
 
 def load_word_list_from_file(file: str):
     try:
@@ -41,3 +42,16 @@ def remove_exclusions(word_list: list, additional_exclusions: list):
 
 def round_to_nearest_50(x, base=50):
     return base * round(x/base)
+
+def text_setup(file):
+    _, file_extension = os.path.splitext(file)
+    if file_extension == ".pdf":
+        target_text = pdfminer.high_level.extract_text(file)
+    else:  # already in txt format
+        try:
+            target_text = open(file, "r")  # filename of your target text here
+            target_text = target_text.read()
+        except KeyError as ke:
+            raise ke
+
+    return target_text

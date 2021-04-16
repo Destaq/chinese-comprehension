@@ -1,4 +1,4 @@
-import re, argparse
+import argparse
 from LAC import LAC
 from collections import Counter
 from re import compile as _Re
@@ -53,10 +53,7 @@ def text_analyzer(
         exclude_words = shared.load_word_list_from_file(excludefile)
 
     # access text in .txt format
-    try:
-        target_text = open(targetfile, "r")  # filename of your target text here
-    except KeyError as ke:
-        raise ke
+    target_text = shared.text_setup(targetfile)
 
     target_text_content = shared.text_clean_up(target_text)
     target_word_content = list(lac.run(target_text_content))
@@ -82,8 +79,12 @@ def text_analyzer(
             return ke
             
     return (
+        "\n\033[92mTotal Words: \033[0m"
+        + f"{shared.round_to_nearest_50(len(target_word_content))}"
         "\n\033[92mTotal Unique Words: \033[0m"
         + f"{shared.round_to_nearest_50(total_unique_words)}"
+        "\n\033[92mTotal Characters: \033[0m"
+        + f"{shared.round_to_nearest_50(len(target_text_content))}"
         "\n\033[92mTotal Unique Characters: \033[0m"
         + f"{shared.round_to_nearest_50(total_unique_characters)}"
     )

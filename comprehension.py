@@ -1,8 +1,9 @@
-import re, argparse
+import os, argparse, io
 from LAC import LAC
 from collections import Counter
 from re import compile as _Re
 import core.shared as shared
+import pdfminer.high_level
 
 parser = argparse.ArgumentParser(
     description="Calculates percentage comprehension of a text file based on known words."
@@ -66,11 +67,17 @@ def comprehension_checker(
     if excludefile != None:
         exclude_words = shared.load_word_list_from_file(excludefile)
 
-    # access text in .txt format
-    try:
-        target_text = open(targetfile, "r")  # filename of your target text here
-    except KeyError as ke:
-        raise ke
+
+    # get text in correct format if in PDF format; TODO: more formats
+    _, file_extension = os.path.splitext(targetfile)
+    if file_extension == ".pdf":
+        target_text = pdfminer.high_level.extract_text(targetfile)
+    else:  # already in txt format
+        try:
+            target_text = open(targetfile, "r")  # filename of your target text here
+            target_text = target_text.read()
+        except KeyError as ke:
+            raise ke
 
     target_text_content = shared.text_clean_up(target_text)
 
@@ -117,7 +124,8 @@ def comprehension_checker(
             return ke
             
     return (
-        "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"
+        f"\n\033[92mWord Count: \033[0m{len(target_text_content)}"
+        + "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"
         + f"{total_unique_words}"
         +"\n\033[92mComprehension: \033[0m"
         + f"{crosstext_count/target_length * 100:.3f}%"

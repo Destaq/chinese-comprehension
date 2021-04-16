@@ -17,7 +17,7 @@ def load_word_list_from_file(file: str):
 
 def text_clean_up(target_text):
     target_text_content = "".join(
-        re.sub("\s+", "\n", target_text.read()).split("\n")
+        re.sub("\s+", "\n", target_text).split("\n")
     )  # remove whitespace
     return target_text_content
 

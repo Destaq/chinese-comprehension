@@ -55,7 +55,7 @@ The file should have words separated line-by-line:
 ...
 ```
 
-The `--target` paramaeter takes the filename containing the target text. This should be normally formatted:
+The `--target` parameter takes the filename containing the target text. This should be normally formatted:
 ```
 美猴王一見，倒身下拜，磕頭不計其數，口中只道：「師父，師父，我弟子志心
 朝禮，志心朝禮。」祖師道：「你是那方人氏？且說個鄉貫、姓名明白，再拜。」
@@ -64,7 +64,7 @@ The `--target` paramaeter takes the filename containing the target text. This sh
 ...
 ```
 
-The `--exclude` parameter takes the filename containing words to exclude words. Exclude any proper nouns such as character names & company names to improve accuracy
+The `--exclude` parameter takes the filename containing words to exclude words. Exclude any proper nouns such as character names & company names to improve accuracy.
 
 The file should have words separated line-by-line:
 ```
@@ -77,8 +77,8 @@ The file should have words separated line-by-line:
 
 ### Example
 
-*Code*: `python3 comprehension.py --known "known.txt" -t "journey_to_the_west.txt" -u "output.txt"`
-*Description*: Gathers known words from `known.txt`, and analyzes `journey_to_the_west.txt` using the default word-by-word splitting. Unknown words are outputted to `output.txt`.
+*Code*: `python3 comprehension.py --known "known.txt" -t "samples/books/journey_to_the_west.txt" -u "output.txt"`
+*Description*: Gathers known words from `known.txt`, and analyzes `samples/books/samples/books/journey_to_the_west.txt` using the default word-by-word splitting. Unknown words are outputted to `output.txt`.
 
 *Content of `output.txt`*
 ```
@@ -115,8 +115,8 @@ optional arguments:
 
 ### Example
 
-*Code*: `python3 analyzer.py -t "journey_to_the_west.txt" -o "output.txt"`
-*Description*: Analyzes `journey_to_the_west.txt` using the word-by-word and character-by-character splitting. Outputs all characters and words to `output.txt`.
+*Code*: `python3 analyzer.py -t "samples/books/journey_to_the_west.txt" -o "output.txt"`
+*Description*: Analyzes `samples/books/journey_to_the_west.txt` using the word-by-word and character-by-character splitting. Outputs all characters and words to `output.txt`.
 
 *Output*
 ```

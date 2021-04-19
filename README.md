@@ -24,19 +24,16 @@ Calculates percentage comprehension of a text file based on known words.
 optional arguments:
   -h, --help            show this help message and exit
   -k KNOWN, --known KNOWN
-                        Relative path to .txt file with newline-separated
-                        known words.
+                        Relative path to .txt file with newline-separated known words.
   -t TARGET, --target TARGET
-                        Relative path to .txt or .pdf target file in Chinese.
-  -m MODE, --mode MODE  Mode for separating text and known vocab: 'smart'
-                        (default, word-by-word using jieba) 'simple'
-                        (character-by-character)
+                        Relative path to .txt target file in Chinese.
+  -m MODE, --mode MODE  Mode for separating text and known vocab: 'smart' (default, word-by-word using jieba) 'simple' (character-by-character)
+  -c, --characters      SUGGESTED: Add this flag (just -c, no extra info) if you know all the characters in your wordlist. This is due to segmentation limitation. For ex. 慢慢的 is seen as one word, if this word is not in your wordlist,
+                        it will be unknown. By setting this flag (and having the characters 慢 and 的 in your wordlist (can be part of other words), 慢慢的 will be an 'understood' word.
   -u UNKNOWN, --unknown UNKNOWN
-                        Path to output file with unknown words from text. Skip
-                        to not create an output file.
+                        Path to output file with unknown words from text. Skip to not create an output file.
   -e EXCLUDE, --exclude EXCLUDE
-                        Path to .txt file with newline-separated words to
-                        exclude (e.g. proper nouns)
+                        Path to .txt file with newline-separated words to exclude (e.g. proper nouns)
 ```
 
 The `--known` parameter takes the filename containing known words. These words represent all words the user knows for best accuracy. Methods for fetching these words:
@@ -63,6 +60,23 @@ The `--target` parameter takes the filename containing the target text. This sho
 他本是個撒詐搗虛之徒，那裏
 ...
 ```
+
+**:warning: HIGHLY RECOMMENDED TO SET ON**: the `-c` or `--comprehension` flag allows you to mark words which would otherwise be unknown as known, as long as you know all of the characters that make it up. Due to the way the word segmenter words, many words that learners are likely to know are graded separately, and thus would not be present on the `known.txt` file.
+
+For example, say a learner knows the word `开心` and the particle `地`. Logically, they would be expected to understand the word `开心地`, or happily. However, because this word is parsed *standalone*, unless it is explicitly on the wordlist, it would be viewed as unknown. This behavior can be bypassed by setting the `-c` flag, ex. `python3 comprehension.py -k "known.txt" -t "myfile.pdf" -c`. Keep in mind that this method is also not perfect, because independent words made up of known characters may have differing meanings (e.g. 头发 - learners may know 头 and 发 but not them in conjunction).
+
+It is advised to take comprehension using the `-c` flag with a grain of salt, based on the difficulty of the text the level is likely to be some percentage points lower. But it is still far more accurate then without the flag.
+
+`--mode` allows you to switch between 'simple' and 'smart' mode, where the default is 'smart' - segmenting text word-by-word (ex. 你/有/什么/名字/？ for smart vs 你/有/什/么…… for simple.
+
+`--unknown` allows you to create a file with all the unknown words in the text, in the format:
+```
+Hanzi : Count
+Hanzi : Count
+...
+```
+
+which is sorted by frequency. Ideal when preparing for a more difficult text or wanting to recap words. __This file has to be .txt. format__. Ex. `python3 comprehension.py -k "data/known.txt" -t "books/Earth_Vernes.pdf" -u "data/unknown_words.txt"`.
 
 The `--exclude` parameter takes the filename containing words to exclude words. Exclude any proper nouns such as character names & company names to improve accuracy.
 

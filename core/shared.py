@@ -1,4 +1,5 @@
 import re, os
+import unicodedata
 import pdfminer.high_level
 
 def load_word_list_from_file(file: str):
@@ -8,19 +9,32 @@ def load_word_list_from_file(file: str):
         raise ke
 
     words = set(
-        re.sub("\s+", "\n", word_list.read()).split("\n")
+        re.sub(r"\s+", "\n", word_list.read()).split("\n")
     )  # splitting to remove accidental whitespace
     if "" in words:
         words.remove("")
     word_list.close()
 
-    return words
+    finalized_words = words.copy()
+
+    # assume learner knows characters used in every word they know
+    # this is to make parsing words such as 慢慢的 which are not
+    # on the HSK be "recognized" by the program.
+    for word in words:
+        for single_hanzi in [char for char in word]:
+            finalized_words.add(single_hanzi)
+
+    return finalized_words
 
 def text_clean_up(target_text):
     target_text_content = "".join(
-        re.sub("\s+", "\n", target_text).split("\n")
+        re.sub(r"\s+", "\n", target_text).split("\n")
     )  # remove whitespace
-    return target_text_content
+
+    # remove diacritics
+    normalized = unicodedata.normalize("NFKD", target_text_content)
+    result = "".join(c for c in normalized if unicodedata.category(c) != "Mn")
+    return result
 
 def remove_punctuations(word_list: list):
     punctuations = ["！", "？", "。", "，"]
@@ -32,8 +46,8 @@ def remove_punctuations(word_list: list):
 
 def remove_exclusions(word_list: list, additional_exclusions: list):
     punctuations = (
-        "！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─"
-    )
+        ",.:()!@[]+/\\！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─\''\""
+    )  # NOTE: need to include English punctuation due to PDF reader
     exclusions = [char for char in punctuations]
     exclusions.extend(additional_exclusions)
     word_list = list(filter(lambda x: x not in exclusions and not re.match(r'[a-zA-Z0-9]+', x), word_list))

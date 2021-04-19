@@ -26,6 +26,14 @@ parser.add_argument(
     help="Mode for separating text and known vocab: 'smart' (default, word-by-word using jieba) 'simple' (character-by-character)",
 )
 parser.add_argument(
+    "-c",
+    "--characters",
+    required=False,
+    default=False,
+    action="store_true",
+    help="SUGGESTED: Add this flag (just -c, no extra info) if you know all the characters in your wordlist. This is due to segmentation limitation. For ex. 慢慢的 is seen as one word, if this word is not in your wordlist, it will be unknown. By setting this flag (and having the characters 慢 and 的 in your wordlist (can be part of other words), 慢慢的 will be an 'understood' word."
+)
+parser.add_argument(
     "-u",
     "--unknown",
     required=False,
@@ -91,14 +99,17 @@ def comprehension_checker(
 
     total_unique_words = len(counted_target)
     counter = 0
-    crosstext_count = 0
+    crosstext_count = 0  # counter of words that are understood
     unknown_words = []
     unknown_word_counter = 0
 
-    for hanzi, count in counted_target.items():
+    for hanzi, count in counted_target.items():  # hanzzi represents a full word (unless simple mode)
         counter += 1
         print(f"-- {counter/total_unique_words * 100:.2f}% complete --", end="\r")
         if hanzi in known_words:
+            crosstext_count += count
+        elif set([char for char in hanzi]).issubset(set(known_words)) and args.characters:
+            # ex. user knows 慢 的，慢慢的=对
             crosstext_count += count
         else:
             unknown_word_counter += 1

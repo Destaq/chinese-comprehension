@@ -151,16 +151,19 @@ Total Unique Characters: 3572
 ...
 
 === All Unique Characters ===
-的 : 19664
-了 : 17135
-余 : 14223
-皓 : 14103
+的 : 19664 (4.2%)
+了 : 17135 (5.6%)
+余 : 14223 ...
+*皓 : 14103
 一 : 12667
 周 : 11641
 昇 : 10756
 不 : 10217
 我 : 8723
 ```
+
+Note the *. This will be put next to words that are not known if a knownfile is provided. Likewise, note the percentages. This is the cumulative frequency percentages of these texts.
+Currently only possible if smart mode is selected.
 
 # Vocab Adder
 The `vocab_adder` file is extremely simple. It allows you to input a file and your known vocab list, and will append all unknown words in the file to your vocab list.

@@ -10,6 +10,12 @@ parser = argparse.ArgumentParser(
     description="Calculate unique words and character count of a text file - result is rounded to nearest 50"
 )
 parser.add_argument(
+    "-k",
+    "--known",
+    required=False,
+    help="Relative path to .txt file with newline-separated known words for *ing in output.",
+)
+parser.add_argument(
     "-t",
     "--target",
     required=True,
@@ -48,8 +54,10 @@ def split_unicode_chrs(text):
 
 
 def text_analyzer(
-    targetfile: str, outputfile: str, excludefile: str,
+    knownfile: str, targetfile: str, outputfile: str, excludefile: str
 ) -> str:
+    known_words = shared.load_word_list_from_file(knownfile)
+
     exclude_words = []
     if excludefile != None:
         exclude_words = shared.load_word_list_from_file(excludefile)
@@ -98,13 +106,27 @@ def text_analyzer(
         try:
             with open(outputfile, "w+") as file:
                 file.write("=== All Unique Words ===\n")
+                total_count = sum(counted_target_word.values())
+                current_cumulative_count = 0
                 for ele, count in counted_target_word.most_common():
-                    file.write(ele + " : " + str(count) + "\n")
+                    current_cumulative_count += count
+                    spaceup = 0
+                    if ele not in known_words:
+                        ele = "*" + str(ele)
+                        spaceup = 1
+                    file.write(ele + (8 - len(ele)) * " " + ": " + str(count) + (7 - len(str(count))) * " " + ": " + 8 * " " + str(round((current_cumulative_count * 100) / total_count, 3)) + "%\n")
 
                 file.write("\n\n\n")
                 file.write("=== All Unique Characters ===\n")
+                total_count = sum(counted_target_character.values())
+                current_cumulative_count = 0
                 for ele, count in counted_target_character.most_common():
-                    file.write(ele + " : " + str(count) + "\n")
+                    current_cumulative_count += count
+                    spaceup = 0
+                    if ele not in known_words:
+                        ele = "*" + str(ele)
+                        spaceup = 1
+                    file.write(ele + (8 - len(ele)) * " " + ": " + str(count) + (7 - len(str(count))) * " " + ": " + 8 * " " + str(round((current_cumulative_count * 100) / total_count, 3)) + "%\n")
         except KeyError as ke:
             return ke
 
@@ -126,4 +148,4 @@ def text_analyzer(
     )
 
 if __name__ == "__main__":
-    print(text_analyzer(args.target, args.output, args.exclude))
+    print(text_analyzer(args.known, args.target, args.output, args.exclude))

@@ -1,7 +1,6 @@
 import argparse
 from LAC import LAC
 from collections import Counter
-from re import compile as _Re
 import core.shared as shared
 
 parser = argparse.ArgumentParser(
@@ -53,18 +52,6 @@ lac = LAC(mode='seg')
 print("Initializing parser... \033[94mdone\033[0m\n")
 
 
-_unicode_chr_splitter = _Re("(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)").split
-
-
-def split_unicode_chrs(text):
-    """
-    Split a Chinese text character by character.
-
-    Curtesy of `flow` on StackOverflow: https://stackoverflow.com/a/3798790/12876940
-    """
-    return [chr for chr in _unicode_chr_splitter(text) if chr]
-
-
 def comprehension_checker(
     knownfile: str, targetfile: str, mode: str, outputfile: str, excludefile: str,
 ) -> str:
@@ -86,7 +73,7 @@ def comprehension_checker(
         target_text_content = list(lac.run(target_text_content))
     elif mode == "simple":
         character_word_text = "Characters"
-        target_text_content = split_unicode_chrs(target_text_content)
+        target_text_content = shared.split_unicode_chrs(target_text_content)
         known_words = set(
             "".join([e for e in known_words])
         )  # convert known_words to chr_by_chr too

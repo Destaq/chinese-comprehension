@@ -1,6 +1,7 @@
 import re, os
 import unicodedata
 import pdfminer.high_level
+from re import compile as _Re
 
 def load_word_list_from_file(file: str):
     try:
@@ -46,7 +47,7 @@ def remove_punctuations(word_list: list):
 
 def remove_exclusions(word_list: list, additional_exclusions: list):
     punctuations = (
-        ",.:()!@[]+/\\！？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─\''\""
+        ",.:()!@[]+/\\！?？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─\''\""
     )  # NOTE: need to include English punctuation due to PDF reader
     exclusions = [char for char in punctuations]
     exclusions.extend(additional_exclusions)
@@ -69,3 +70,14 @@ def text_setup(file):
             raise ke
 
     return target_text
+
+
+_unicode_chr_splitter = _Re("(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)").split
+
+def split_unicode_chrs(text):
+    """
+    Split a Chinese text character by character.
+
+    Curtesy of `flow` on StackOverflow: https://stackoverflow.com/a/3798790/12876940
+    """
+    return [chr for chr in _unicode_chr_splitter(text) if chr]

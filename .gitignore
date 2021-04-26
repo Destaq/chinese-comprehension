@@ -1,4 +1,4 @@
 /core/__pycache__
 .DS_STORE
 /books
-/data
+/data/*.txt

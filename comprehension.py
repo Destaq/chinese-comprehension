@@ -113,7 +113,7 @@ def comprehension_checker(
             return ke
             
     return (
-        f"\n\033[92mWord Count: \033[0m{len(target_text_content)}"
+        f"\n\033[92mWord Count: \033[0m{len(target_text_content)} (excluding 'exclusions')"
         + "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"
         + f"{total_unique_words}"
         +"\n\033[92mComprehension: \033[0m"

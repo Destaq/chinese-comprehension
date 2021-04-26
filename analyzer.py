@@ -1,5 +1,7 @@
 import argparse
+import csv
 from LAC import LAC
+from tabulate import tabulate
 from collections import Counter
 from re import compile as _Re
 import core.shared as shared
@@ -56,6 +58,7 @@ def text_analyzer(
     target_text = shared.text_setup(targetfile)
 
     target_text_content = shared.text_clean_up(target_text)
+    target_text_content = ''.join(shared.remove_exclusions(target_text_content, exclude_words))
     target_word_content = list(lac.run(target_text_content))
     counted_target_word = Counter(shared.remove_exclusions(target_word_content, exclude_words))
     total_unique_words = len(counted_target_word)
@@ -63,6 +66,33 @@ def text_analyzer(
     target_character_content = split_unicode_chrs(target_text_content)
     counted_target_character = Counter(shared.remove_exclusions(target_character_content, exclude_words))
     total_unique_characters = len(counted_target_character)
+
+    # calculate hsk distribution
+    hsk_distribution = {}
+    with open('data/hsk_list.csv', mode='r') as csv_file:
+        rows = csv.reader(csv_file, delimiter=",")
+        for row in rows:
+            if row[0] != "hanzi":  # first row
+                hsk_distribution[row[0]] = {
+                    "level": row[1],
+                    "pinyin": row[2],
+                    "meaning": row[3]
+                }
+
+    hsk_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, "-": 0}
+    for word in target_word_content:
+        try:
+            hsk_counts[int(hsk_distribution[word]["level"])] += 1
+        except:
+            hsk_counts["-"] += 1
+
+    total_value = 0
+    all_values = sum(hsk_counts.values())
+    for (key, value) in hsk_counts.items():
+        total_value += value
+        percentage = round((total_value / all_values) * 100, 3)
+        value = [str(value), f" ({percentage}%)"]
+        hsk_counts[key] = value
 
     if outputfile is not None:
         try:
@@ -77,6 +107,10 @@ def text_analyzer(
                     file.write(ele + " : " + str(count) + "\n")
         except KeyError as ke:
             return ke
+
+    hsk_output = []
+    for (key, value) in hsk_counts.items():
+        hsk_output.append([key, value[0], value[1]])
             
     return (
         "\n\033[92mTotal Words: \033[0m"
@@ -87,6 +121,8 @@ def text_analyzer(
         + f"{shared.round_to_nearest_50(len(target_text_content))}"
         "\n\033[92mTotal Unique Characters: \033[0m"
         + f"{shared.round_to_nearest_50(total_unique_characters)}"
+        + "\n\n\033[90m=== HSK Breakdown ===\n\033[0m"
+        + tabulate(hsk_output, headers=["Level", "Count", "Cumulative Frequency"])
     )
 
 if __name__ == "__main__":

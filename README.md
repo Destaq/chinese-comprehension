@@ -13,6 +13,7 @@ Analyze a Chinese text using your known words to gauge comprehension.
   - Calculate the above splitting text and known vocab word-by-word or character-by-character
 - Exclude words such as proper nouns to improve comprehension accuracy 
 - Output unknown words into a file
+- Add all words from book to known wordlist
 
 ## Usage
 ```
@@ -160,3 +161,11 @@ Total Unique Characters: 3572
 不 : 10217
 我 : 8723
 ```
+
+# Vocab Adder
+The `vocab_adder` file is extremely simple. It allows you to input a file and your known vocab list, and will append all unknown words in the file to your vocab list.
+
+Example:
+`python3 vocab_adder.py -t books/Earth_Vernes.pdf -k data/known.txt`
+
+You can specify the mode (default is smard, which is segmentation) with the `-m` flag by typing `--mode simple`.

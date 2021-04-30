@@ -29,7 +29,7 @@ optional arguments:
   -t TARGET, --target TARGET
                         Relative path to .txt target file in Chinese.
   -m MODE, --mode MODE  Mode for separating text and known vocab: 'smart' (default, word-by-word using jieba) 'simple' (character-by-character)
-  -c, --characters      SUGGESTED: Add this flag (just -c, no extra info) if you know all the characters in your wordlist. This is due to segmentation limitation. For ex. 慢慢的 is seen as one word, if this word is not in your wordlist,
+  -c, --characters      Add this flag (just -c, no extra info) if you know all the characters in your wordlist. This is due to segmentation limitation. For ex. 慢慢的 is seen as one word, if this word is not in your wordlist,
                         it will be unknown. By setting this flag (and having the characters 慢 and 的 in your wordlist (can be part of other words), 慢慢的 will be an 'understood' word.
   -u UNKNOWN, --unknown UNKNOWN
                         Path to output file with unknown words from text. Skip to not create an output file.
@@ -127,6 +127,8 @@ optional arguments:
                         Path to .txt file with newline-separated words to
                         exclude (e.g. proper nouns)
 ```
+
+Also link to known file for *ing words that are unknown in the output (--known, -k, and path).
 
 ### Example
 

@@ -2,3 +2,4 @@
 .DS_STORE
 /books
 /data/*.txt
+output.txt

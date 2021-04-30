@@ -56,7 +56,10 @@ def split_unicode_chrs(text):
 def text_analyzer(
     knownfile: str, targetfile: str, outputfile: str, excludefile: str
 ) -> str:
-    known_words = shared.load_word_list_from_file(knownfile)
+    try:
+        known_words = shared.load_word_list_from_file(knownfile)
+    except TypeError:
+        known_words = []
 
     exclude_words = []
     if excludefile != None:

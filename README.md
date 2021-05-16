@@ -5,14 +5,18 @@ Analyze a Chinese text using your known words to gauge comprehension.
 * Python 3.8 
 * [LAC](https://github.com/baidu/lac/) - Chinese character segmentation library
 
-![](result.png)
+![image](https://user-images.githubusercontent.com/61620873/118395391-88917000-b64a-11eb-8341-3fe3a12aec27.png)
+![image](https://user-images.githubusercontent.com/61620873/118395410-a65ed500-b64a-11eb-8d3c-5546e65b9d5a.png)
+![image](https://user-images.githubusercontent.com/61620873/118395468-db6b2780-b64a-11eb-8d29-cc745228ea18.png)
+
+
 ## Features
 - Count unique words in text
   - Count unique unknown words in text
 - Calculate comprehension of text based on your known words
   - Calculate the above splitting text and known vocab word-by-word or character-by-character
 - Exclude words such as proper nouns to improve comprehension accuracy 
-- Output unknown words into a file
+- Output unknown words into a file, sorted by frequency
 - Add all words from book to known wordlist
 
 ## Usage

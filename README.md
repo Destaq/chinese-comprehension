@@ -62,7 +62,7 @@ The `--target` parameter takes the filename containing the target text. This sho
 ...
 ```
 
-**:warning: HIGHLY RECOMMENDED TO SET ON**: the `-c` or `--comprehension` flag allows you to mark words which would otherwise be unknown as known, as long as you know all of the characters that make it up. Due to the way the word segmenter words, many words that learners are likely to know are graded separately, and thus would not be present on the `known.txt` file.
+The `-c` or `--comprehension` flag allows you to mark words which would otherwise be unknown as known, as long as you know all of the characters that make it up. Due to the way the word segmenter words, many words that learners are likely to know are graded separately, and thus would not be present on the `known.txt` file.
 
 For example, say a learner knows the word `开心` and the particle `地`. Logically, they would be expected to understand the word `开心地`, or happily. However, because this word is parsed *standalone*, unless it is explicitly on the wordlist, it would be viewed as unknown. This behavior can be bypassed by setting the `-c` flag, ex. `python3 comprehension.py -k "known.txt" -t "myfile.pdf" -c`. Keep in mind that this method is also not perfect, because independent words made up of known characters may have differing meanings (e.g. 头发 - learners may know 头 and 发 but not them in conjunction).
 

@@ -28,10 +28,10 @@ def add_vocab(targetfile: str, knownfile: str, mode: str):
 
     # add to known wordlist if not in wordlist
     known_words_list = []
-    with open(knownfile, "r+") as file:
+    with open(knownfile, "r+", encoding="utf8") as file:
         known_words_list = file.read().splitlines()
     
-    with open(knownfile, "w+") as file:
+    with open(knownfile, "w+", encoding="utf8") as file:
         for word in known_words_list:
             file.write(word + "\n")
 

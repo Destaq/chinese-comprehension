@@ -5,7 +5,7 @@ from re import compile as _Re
 
 def load_word_list_from_file(file: str):
     try:
-        word_list = open(file, "r")  # filename of your known words here
+        word_list = open(file, "r", encoding="utf8")  # filename of your known words here
     except KeyError as ke:
         raise ke
 

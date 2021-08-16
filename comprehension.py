@@ -106,7 +106,7 @@ def comprehension_checker(
     unknown_words.sort(key=sort_by_count, reverse=True)
     if outputfile is not None:
         try:
-            with open(outputfile, "w+") as file:
+            with open(outputfile, "w+", encoding="utf8") as file:
                 for ele, count in unknown_words:
                     file.write(ele + " : " + str(count) + "\n")
         except KeyError as ke:

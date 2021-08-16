@@ -80,7 +80,7 @@ def text_analyzer(
 
     # calculate hsk distribution
     hsk_distribution = {}
-    with open('data/hsk_list.csv', mode='r') as csv_file:
+    with open('data/hsk_list.csv', mode='r', encoding="utf8") as csv_file:
         rows = csv.reader(csv_file, delimiter=",")
         for row in rows:
             if row[0] != "hanzi":  # first row
@@ -107,7 +107,7 @@ def text_analyzer(
 
     if outputfile is not None:
         try:
-            with open(outputfile, "w+") as file:
+            with open(outputfile, "w+", encoding="utf8") as file:
                 file.write("=== All Unique Words ===\n")
                 total_count = sum(counted_target_word.values())
                 current_cumulative_count = 0

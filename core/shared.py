@@ -64,7 +64,7 @@ def text_setup(file):
         target_text = pdfminer.high_level.extract_text(file)
     else:  # already in txt format
         try:
-             target_text = open(file, "r", encoding="utf8")  # filename of your target text here
+            target_text = open(file, "r", encoding="utf8")  # filename of your target text here
             target_text = target_text.read()
         except KeyError as ke:
             raise ke

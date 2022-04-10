@@ -78,6 +78,6 @@ def split_unicode_chrs(text):
     """
     Split a Chinese text character by character.
 
-    Curtesy of `flow` on StackOverflow: https://stackoverflow.com/a/3798790/12876940
+    Courtesy of `flow` on StackOverflow: https://stackoverflow.com/a/3798790/12876940
     """
     return [chr for chr in _unicode_chr_splitter(text) if chr]

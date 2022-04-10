@@ -115,10 +115,11 @@ The file should have words separated line-by-line:
 
 ## Usage
 ```
-usage: analyzer.py [-h] -t TARGET [-o OUTPUT] [-e EXCLUDE]
+usage: analyzer.py [-h] -t TARGET [-o OUTPUT] [-e EXCLUDE] [-n NOWORDS]
 
 Calculate unique words and character count of a text file - result is rounded
-to nearest 50
+to nearest 50. Note that character counts may not line up with character counts
+seen in official webnovel figures, as this tool does not count punctuation.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -130,6 +131,8 @@ optional arguments:
   -e EXCLUDE, --exclude EXCLUDE
                         Path to .txt file with newline-separated words to
                         exclude (e.g. proper nouns)
+  -n NOWORDS, --no-words NOWORDS
+                        Setting this flag will mean that the tool does not segment words, so you will not have a calculating of # of words, # of unique words, and HSK breakdown. Can lead to a significant speedup, as segmentation takes approx. 1 minute per 1 million characters. Off by default. To set, simply add -n.
 ```
 
 Also link to known file for *ing words that are unknown in the output (--known, -k, and path).

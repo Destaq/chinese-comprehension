@@ -1,6 +1,5 @@
 import argparse
 import csv
-from LAC import LAC
 from tabulate import tabulate
 from collections import Counter
 from re import compile as _Re
@@ -31,15 +30,18 @@ parser.add_argument(
     "-e",
     "--exclude",
     required=False,
-    help="Path to .txt file with newline-separated words to exclude (e.g. proper nouns)",
+    help="Path to .txt file with newline-separated words to exclude (e.g. proper nouns).",
+)
+parser.add_argument(
+    "-n",
+    "--no-words",
+    dest="no_words",
+    action="store_true",
+    help="Setting this flag will mean that the tool does not segment words, so you will not have a calculating of # of words, # of unique words, and HSK breakdown. Can lead to a significant speedup, as segmentation takes approx. 1 minute per 1 million characters. Off by default. To set, simply add -n."
 )
 
+parser.set_defaults(no_words=False)
 args = parser.parse_args()
-
-print("Initializing parser...", end="\r")
-lac = LAC(mode='seg')
-print("Initializing parser... \033[94mdone\033[0m\n")
-
 
 _unicode_chr_splitter = _Re("(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)").split
 
@@ -54,7 +56,7 @@ def split_unicode_chrs(text):
 
 
 def text_analyzer(
-    knownfile: str, targetfile: str, outputfile: str, excludefile: str
+    knownfile: str, targetfile: str, outputfile: str, excludefile: str, no_words: bool = False
 ) -> str:
     try:
         known_words = shared.load_word_list_from_file(knownfile)
@@ -70,85 +72,99 @@ def text_analyzer(
 
     target_text_content = shared.text_clean_up(target_text)
     target_text_content = ''.join(shared.remove_exclusions(target_text_content, exclude_words))
-    target_word_content = list(lac.run(target_text_content))
-    counted_target_word = Counter(shared.remove_exclusions(target_word_content, exclude_words))
-    total_unique_words = len(counted_target_word)
-
     target_character_content = split_unicode_chrs(target_text_content)
     counted_target_character = Counter(shared.remove_exclusions(target_character_content, exclude_words))
     total_unique_characters = len(counted_target_character)
 
-    # calculate hsk distribution
-    hsk_distribution = {}
-    with open('data/hsk_list.csv', mode='r', encoding="utf8") as csv_file:
-        rows = csv.reader(csv_file, delimiter=",")
-        for row in rows:
-            if row[0] != "hanzi":  # first row
-                hsk_distribution[row[0]] = {
-                    "level": row[1],
-                    "pinyin": row[2],
-                    "meaning": row[3]
-                }
+    if not no_words:
+        # import LAC for segmentation
+        from LAC import LAC
 
-    hsk_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, "-": 0}
-    for word in target_word_content:
-        try:
-            hsk_counts[int(hsk_distribution[word]["level"])] += 1
-        except:
-            hsk_counts["-"] += 1
+        # initialize the parser
+        print("Initializing parser...", end="\r")
+        lac = LAC(mode='seg')
+        print("Initializing parser... \033[94mdone\033[0m\n")
 
-    total_value = 0
-    all_values = sum(hsk_counts.values())
-    for (key, value) in hsk_counts.items():
-        total_value += value
-        percentage = round((total_value / all_values) * 100, 3)
-        value = [str(value), f" ({percentage}%)"]
-        hsk_counts[key] = value
+        target_word_content = list(lac.run(target_text_content))
+        counted_target_word = Counter(shared.remove_exclusions(target_word_content, exclude_words))
+        total_unique_words = len(counted_target_word)
+
+        # calculate hsk distribution
+        hsk_distribution = {}
+        with open('data/hsk_list.csv', mode='r', encoding="utf8") as csv_file:
+            rows = csv.reader(csv_file, delimiter=",")
+            for row in rows:
+                if row[0] != "hanzi":  # first row
+                    hsk_distribution[row[0]] = {
+                        "level": row[1],
+                        "pinyin": row[2],
+                        "meaning": row[3]
+                    }
+
+        hsk_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, "-": 0}
+        for word in target_word_content:
+            try:
+                hsk_counts[int(hsk_distribution[word]["level"])] += 1
+            except:
+                hsk_counts["-"] += 1
+
+        total_value = 0
+        all_values = sum(hsk_counts.values())
+        for (key, value) in hsk_counts.items():
+            total_value += value
+            percentage = round((total_value / all_values) * 100, 3)
+            value = [str(value), f" ({percentage}%)"]
+            hsk_counts[key] = value
+
+        hsk_output = []
+        for (key, value) in hsk_counts.items():
+            hsk_output.append([key, value[0], value[1]])
 
     if outputfile is not None:
         try:
             with open(outputfile, "w+", encoding="utf8") as file:
-                file.write("=== All Unique Words ===\n")
-                total_count = sum(counted_target_word.values())
-                current_cumulative_count = 0
-                for ele, count in counted_target_word.most_common():
-                    current_cumulative_count += count
-                    spaceup = 0
-                    if ele not in known_words:
-                        ele = "*" + str(ele)
-                        spaceup = 1
-                    file.write(ele + (8 - len(ele)) * " " + ": " + str(count) + (7 - len(str(count))) * " " + ": " + 8 * " " + str(round((current_cumulative_count * 100) / total_count, 3)) + "%\n")
+                if not no_words:
+                    file.write("=== All Unique Words ===\n")
+                    total_count = sum(counted_target_word.values())
+                    current_cumulative_count = 0
+                    for ele, count in counted_target_word.most_common():
+                        current_cumulative_count += count
+                        if ele not in known_words:
+                            ele = "*" + str(ele)
+                        file.write(ele + (8 - len(ele)) * " " + ": " + str(count) + (7 - len(str(count))) * " " + ": " + 8 * " " + str(round((current_cumulative_count * 100) / total_count, 3)) + "%\n")
 
-                file.write("\n\n\n")
+                    file.write("\n\n\n")
                 file.write("=== All Unique Characters ===\n")
                 total_count = sum(counted_target_character.values())
                 current_cumulative_count = 0
                 for ele, count in counted_target_character.most_common():
                     current_cumulative_count += count
-                    spaceup = 0
                     if ele not in known_words:
                         ele = "*" + str(ele)
-                        spaceup = 1
                     file.write(ele + (8 - len(ele)) * " " + ": " + str(count) + (7 - len(str(count))) * " " + ": " + 8 * " " + str(round((current_cumulative_count * 100) / total_count, 3)) + "%\n")
         except KeyError as ke:
             return ke
-
-    hsk_output = []
-    for (key, value) in hsk_counts.items():
-        hsk_output.append([key, value[0], value[1]])
             
-    return (
-        "\n\033[92mTotal Words: \033[0m"
-        + f"{shared.round_to_nearest_50(len(target_word_content))}"
-        "\n\033[92mTotal Unique Words: \033[0m"
-        + f"{shared.round_to_nearest_50(total_unique_words)}"
-        "\n\033[92mTotal Characters: \033[0m"
-        + f"{shared.round_to_nearest_50(len(target_text_content))}"
-        "\n\033[92mTotal Unique Characters: \033[0m"
-        + f"{shared.round_to_nearest_50(total_unique_characters)}"
-        + "\n\n\033[90m=== HSK Breakdown ===\n\033[0m"
-        + tabulate(hsk_output, headers=["Level", "Count", "Cumulative Frequency"])
-    )
+    if not no_words:
+        return (
+            "\n\033[92mTotal Words: \033[0m"
+            + f"{shared.round_to_nearest_50(len(target_word_content))}"
+            "\n\033[92mTotal Unique Words: \033[0m"
+            + f"{shared.round_to_nearest_50(total_unique_words)}"
+            "\n\033[92mTotal Characters: \033[0m"
+            + f"{shared.round_to_nearest_50(len(target_text_content))}"
+            "\n\033[92mTotal Unique Characters: \033[0m"
+            + f"{shared.round_to_nearest_50(total_unique_characters)}"
+            + "\n\n\033[90m=== HSK Breakdown ===\n\033[0m"
+            + tabulate(hsk_output, headers=["Level", "Count", "Cumulative Frequency"])
+        )
+    else:
+        return (
+            "\033[92mTotal Characters: \033[0m"
+            + f"{shared.round_to_nearest_50(len(target_text_content))}"
+            "\n\033[92mTotal Unique Characters: \033[0m"
+            + f"{shared.round_to_nearest_50(total_unique_characters)}"
+        )
 
 if __name__ == "__main__":
-    print(text_analyzer(args.known, args.target, args.output, args.exclude))
+    print(text_analyzer(args.known, args.target, args.output, args.exclude, args.no_words))

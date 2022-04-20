@@ -37,21 +37,12 @@ def text_clean_up(target_text):
     result = "".join(c for c in normalized if unicodedata.category(c) != "Mn")
     return result
 
-def remove_punctuations(word_list: list):
-    punctuations = ["！", "？", "。", "，"]
-    for punctuation in punctuations:
-        if punctuation in word_list:
-            word_list = [v for v in word_list if v != punctuation]
-
-    return word_list
-
 def remove_exclusions(word_list: list, additional_exclusions: list):
-    punctuations = (
-        ",.:()!@[]+/\\！?？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─\''\""
-    )  # NOTE: need to include English punctuation due to PDF reader
-    exclusions = [char for char in punctuations]
-    exclusions.extend(additional_exclusions)
-    word_list = list(filter(lambda x: x not in exclusions and not re.match(r'[a-zA-Z0-9]+', x), word_list))
+    # punctuations = (
+    #     ",.:()!@[]+/\\！?？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─\''\""
+    # )  # NOTE: need to include English punctuation due to PDF reader
+    # NOTE: punctuations are now disabled as that is the industry standard
+    word_list = list(filter(lambda x: x not in additional_exclusions and not re.match(r'[a-zA-Z0-9]+', x), word_list))
 
     return word_list
 

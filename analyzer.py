@@ -1,9 +1,12 @@
+import os
 import argparse
 import csv
 from tabulate import tabulate
 from collections import Counter
 from re import compile as _Re
 import core.shared as shared
+
+os.system("")
 
 parser = argparse.ArgumentParser(
     description="Calculate unique words and character count of a text file - result is rounded to nearest 50"
@@ -74,6 +77,15 @@ def text_analyzer(
     target_text_content = ''.join(shared.remove_exclusions(target_text_content, exclude_words))
     target_character_content = split_unicode_chrs(target_text_content)
     counted_target_character = Counter(shared.remove_exclusions(target_character_content, exclude_words))
+
+    punctuations = (
+        ",.:()!@[]+/\\！?？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─\''\""
+    )
+    punctuations = [e for e in punctuations]
+    # delete the elements in punctuations from counted_target Counter object
+    for e in punctuations:
+        del counted_target_character[e]
+
     total_unique_characters = len(counted_target_character)
 
     if not no_words:
@@ -83,10 +95,11 @@ def text_analyzer(
         # initialize the parser
         print("Initializing parser...", end="\r")
         lac = LAC(mode='seg')
-        print("Initializing parser... \033[94mdone\033[0m\n")
+        print("Initializing parser... done\n")
 
         target_word_content = list(lac.run(target_text_content))
-        counted_target_word = Counter(shared.remove_exclusions(target_word_content, exclude_words))
+        stripped_target_word_content = shared.remove_exclusions(target_word_content, exclude_words, True)  # get rid of punctuation that inflates the word count
+        counted_target_word = Counter(stripped_target_word_content)  # yes for getting rid of punctuations
         total_unique_words = len(counted_target_word)
 
         # calculate hsk distribution
@@ -102,7 +115,7 @@ def text_analyzer(
                     }
 
         hsk_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, "-": 0}
-        for word in target_word_content:
+        for word in stripped_target_word_content:
             try:
                 hsk_counts[int(hsk_distribution[word]["level"])] += 1
             except:
@@ -147,22 +160,22 @@ def text_analyzer(
             
     if not no_words:
         return (
-            "\n\033[92mTotal Words: \033[0m"
-            + f"{shared.round_to_nearest_50(len(target_word_content))}"
-            "\n\033[92mTotal Unique Words: \033[0m"
+            "\nTotal Words: "
+            + f"{shared.round_to_nearest_50(len(stripped_target_word_content))}"  # stripped as in no punctuations
+            "\nTotal Unique Words: "
             + f"{shared.round_to_nearest_50(total_unique_words)}"
-            "\n\033[92mTotal Characters: \033[0m"
+            "\nTotal Characters: "
             + f"{shared.round_to_nearest_50(len(target_text_content))}"
-            "\n\033[92mTotal Unique Characters: \033[0m"
+            "\nTotal Unique Characters: "
             + f"{shared.round_to_nearest_50(total_unique_characters)}"
-            + "\n\n\033[90m=== HSK Breakdown ===\n\033[0m"
+            + "\n\n=== HSK Breakdown ===\n"
             + tabulate(hsk_output, headers=["Level", "Count", "Cumulative Frequency"])
         )
     else:
         return (
-            "\033[92mTotal Characters: \033[0m"
+            "Total Characters: "
             + f"{shared.round_to_nearest_50(len(target_text_content))}"
-            "\n\033[92mTotal Unique Characters: \033[0m"
+            "\nTotal Unique Characters: "
             + f"{shared.round_to_nearest_50(total_unique_characters)}"
         )
 

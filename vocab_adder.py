@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 print("Initializing parser...", end="\r")
 lac = LAC(mode='seg')
-print("Initializing parser... \033[94mdone\033[0m\n")
+print("Initializing parser... done\n")
 
 def add_vocab(targetfile: str, knownfile: str, mode: str):
     target_text = shared.text_setup(targetfile)
@@ -24,7 +24,7 @@ def add_vocab(targetfile: str, knownfile: str, mode: str):
     else:
         target_text_content = shared.split_unicode_chrs(target_text_content)
 
-    target_text_content = shared.remove_exclusions(target_text_content, [])
+    target_text_content = shared.remove_exclusions(target_text_content, [], True)
 
     # add to known wordlist if not in wordlist
     known_words_list = []

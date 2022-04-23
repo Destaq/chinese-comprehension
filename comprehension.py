@@ -49,7 +49,7 @@ args = parser.parse_args()
 
 print("Initializing parser...", end="\r")
 lac = LAC(mode='seg')
-print("Initializing parser... \033[94mdone\033[0m\n")
+print("Initializing parser... done\n")
 
 
 def comprehension_checker(
@@ -82,7 +82,17 @@ def comprehension_checker(
 
     target_text_content = shared.remove_exclusions(target_text_content, exclude_words)
     counted_target = Counter(target_text_content)
-    target_length = len(target_text_content)
+
+    # get rid of punctuations, as this is used for writing and stats
+    punctuations = (
+        ",.:()!@[]+/\\！?？｡。＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.?;﹔|.-·-*─\''\""
+    )
+    punctuations = [e for e in punctuations]
+    # delete elements in punctuations from counted_target Counter object
+    for e in punctuations:
+        del counted_target[e]
+
+    target_length = len(target_text_content)  # includes punctuation
 
     total_unique_words = len(counted_target)
     counter = 0
@@ -113,12 +123,12 @@ def comprehension_checker(
             return ke
             
     return (
-        f"\n\033[92mWord Count: \033[0m{len(target_text_content)} (excluding 'exclusions')"
-        + "\n\033[92mTotal Unique " + f"{character_word_text}" + ": \033[0m"
+        f"\nWord Count: {len(target_text_content)} (excluding 'exclusions')"
+        + "\nTotal Unique " + f"{character_word_text}" + ": "
         + f"{total_unique_words}"
-        +"\n\033[92mComprehension: \033[0m"
+        +"\nComprehension: "
         + f"{crosstext_count/target_length * 100:.3f}%"
-        + "\n\033[92mUnique Unknown " + f"{character_word_text}" + ": \033[0m"
+        + "\nUnique Unknown " + f"{character_word_text}" + ": "
         + f"{unknown_word_counter}"
     )
 

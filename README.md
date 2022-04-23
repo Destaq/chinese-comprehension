@@ -2,7 +2,7 @@
 Analyze a Chinese text using your known words to gauge comprehension.
 
 # Requirements
-* Python 3.8 
+* Python 3.9 or below
 * [LAC](https://github.com/baidu/lac/) - Chinese character segmentation library
 
 ![image](https://user-images.githubusercontent.com/61620873/118395391-88917000-b64a-11eb-8341-3fe3a12aec27.png)
@@ -18,6 +18,33 @@ Analyze a Chinese text using your known words to gauge comprehension.
 - Exclude words such as proper nouns to improve comprehension accuracy 
 - Output unknown words into a file, sorted by frequency
 - Add all words from book to known wordlist
+
+## Installation
+*Non-technical explanation for those not familiar with programming.*
+
+Step 1: Download Python 3.9 or below. [Link](https://www.python.org/downloads/release/python-3912/)
+
+**Note program will not run on Python 3.10 or above**
+
+Step 2: Install Python 3.9. When installing you need to make sure you click the box on the bottom that says "install path variable".
+
+Step 3: After Python is installed click on the search bar and type cmd to start command prompt. This will pull up a window that is "Command Prompt" (Windows).
+
+If you are using Mac, simply open a terminal window by pressing cmd-space and then typing terminal and opening said app.
+
+Step 4: Verify you have python installed by typing `python --version`, it should tell you that you have python 3.X.X installed. If the version says 2.X.X, try typing `python3 --version` instead, and use `python3 -m pip` instead of `pip` in future steps.
+
+Step 5: Download the comprehension zip file [here](https://github.com/Destaq/chinese-comprehension) by clicking the green button and clicking download zip.
+
+Step 6: Once the comprehension zip file is installed you can extract it to where you want it to be.
+
+Step 7: Open the command prompt/terminal window and navigate to the folder you extracted the comprehension zip file to. [How to navigate in the terminal tutorial](https://tutorials.codebar.io/command-line/introduction/tutorial.html). You can also navigate by dragging the folder to the command prompt.
+
+Step 8: Type in `pip install -r requirements.txt` in the commmand line once you navigate to the comprehension folder.
+
+Step 9: You can now refer to the documentation on this page to use the tool!
+
+Finally (technical), note that if you are using an **M1 Mac**, you will need to run everything via a virtual environment as this chip is not supported yet by LAC. This can be easily done with conda by following the following [steps](https://github.com/conda-forge/miniforge/issues/165#issuecomment-860233092).
 
 ## Usage
 ```
@@ -69,6 +96,8 @@ The `--target` parameter takes the filename containing the target text. This sho
 The `-c` or `--comprehension` flag allows you to mark words which would otherwise be unknown as known, as long as you know all of the characters that make it up. Due to the way the word segmenter words, many words that learners are likely to know are graded separately, and thus would not be present on the `known.txt` file.
 
 For example, say a learner knows the word `开心` and the particle `地`. Logically, they would be expected to understand the word `开心地`, or happily. However, because this word is parsed *standalone*, unless it is explicitly on the wordlist, it would be viewed as unknown. This behavior can be bypassed by setting the `-c` flag, ex. `python3 comprehension.py -k "known.txt" -t "myfile.pdf" -c`. Keep in mind that this method is also not perfect, because independent words made up of known characters may have differing meanings (e.g. 头发 - learners may know 头 and 发 but not them in conjunction).
+
+Quick side note: the `"` here are not required, but it's best to put them here anywhere. If your filename has a space in it (for example `my known.txt`), then that will obviously mess with the command line, so this would be reason to put speech marks around it. If you're not sure, just always put speech marks around the arguments.
 
 It is advised to take comprehension using the `-c` flag with a grain of salt, based on the difficulty of the text the level is likely to be some percentage points lower. But it is still far more accurate then without the flag.
 
@@ -135,7 +164,7 @@ optional arguments:
                         Setting this flag will mean that the tool does not segment words, so you will not have a calculating of # of words, # of unique words, and HSK breakdown. Can lead to a significant speedup, as segmentation takes approx. 1 minute per 1 million characters. Off by default. To set, simply add -n.
 ```
 
-Also link to known file for *ing words that are unknown in the output (--known, -k, and path).
+Finally, you can use the `--known` or `-k` argument linking to a file in your system that has newline-separated words that you know. By doing so, and also outputting a file, any words/characters that you don't know will have a star symbol (*) by them.
 
 ### Example
 

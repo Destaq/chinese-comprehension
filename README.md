@@ -209,9 +209,9 @@ The `vocab_adder` file is extremely simple. It allows you to input a file and yo
 Example:
 `python3 vocab_adder.py -t books/Earth_Vernes.pdf -k data/known.txt`
 
-You can specify the mode (default is smard, which is segmentation) with the `-m` flag by typing `--mode simple`.
+You can specify the mode (default is smart, which is segmentation) with the `-m` flag by typing `--mode simple`.
 
 # FAQ
 
-Q: How are punctuations counted?
-A: As is the industry standard, punctuation characters (periods, commas, etc.) *are* included in total character count. However, they are not included in unique character count nor in any output files.
+Q: How is punctuation counted?
+A: As is the industry standard, punctuation (periods, commas, etc.) *are* included in total character count. However, they are not included in unique character count nor in any output files.

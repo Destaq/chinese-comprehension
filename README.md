@@ -101,7 +101,7 @@ Quick side note: the `"` here are not required, but it's best to put them here a
 
 It is advised to take comprehension using the `-c` flag with a grain of salt, based on the difficulty of the text the level is likely to be some percentage points lower. But it is still far more accurate then without the flag.
 
-`--mode` allows you to switch between 'simple' and 'smart' mode, where the default is 'smart' - segmenting text word-by-word (ex. 你/有/什么/名字/？ for smart vs 你/有/什/么…… for simple.
+`--mode` allows you to switch between 'simple' and 'smart' mode, where the default is 'smart' - segmenting text word-by-word (ex. 你/有/什么/名字/？ for smart vs 你/有/什/么…… for simple).
 
 `--unknown` allows you to create a file with all the unknown words in the text, in the format:
 ```

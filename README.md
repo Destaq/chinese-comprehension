@@ -15,6 +15,7 @@ Analyze a Chinese text using your known words to gauge comprehension.
   - Count unique unknown words in text
 - Calculate comprehension of text based on your known words
   - Calculate the above splitting text and known vocab word-by-word or character-by-character
+- Generate a breakdown of the text by HSK level
 - Exclude words such as proper nouns to improve comprehension accuracy 
 - Output unknown words into a file, sorted by frequency
 - Add all words from book to known wordlist
